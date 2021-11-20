@@ -5,5 +5,5 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <string.h>
-
+#include <errno.h>
 #define PORT 4444
