@@ -37,12 +37,9 @@ int main()
 	printf("Initialisation des sockets : OK\n");
 
 	struct sockaddr_in server_addr;
-	memset(&server_addr, '\0', sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(PORT);
-	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	init_server_addr(&server_addr);
 
-	// Ouverture du socket
+	// Ouverture du socket en tant que serveur
 	if(bind(socket_server, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
 	{
 		printf("Bind du socket : ERREUR\n");
@@ -79,12 +76,26 @@ int main()
 
 	// Transformation de la chaine de caracteres recue en un nombre
 	int nbr = string_to_int(buffer);
-	int res = fact(nbr);
-	printf("Resultat : %d! = %d\n", nbr, res);
+	printf("Transformation de la chaine recue en un nombre : OK\n");
 
-	bzero(buffer, BUFFER_TAILLE); //reinitialisation du buffer
+	// Reinitialisation du buffer
+	bzero(buffer, BUFFER_TAILLE);
 	printf("Reinitialisation du buffer : OK\n"); //TO-DO : fonction pour vérifier que le buffer soit vide
 
+	// Calcul de la factorielle du nombre recu
+	sprintf(buffer, "%d", fact(nbr));
+	printf("Calcul de la factorielle : OK\n");	
+	printf("Resultat : %d! = %s\n", nbr, buffer);
+
+	// Envoie du resultat
+	if(sendto(new_socket_server, buffer, BUFFER_TAILLE, 0, (struct sockaddr*) &server_addr, taille_socket) == -1)
+	{
+		printf("Envoi de la reponse : ERREUR : %d\n", errno);
+		return errno;
+	}
+	printf("Envoi de la reponse : OK\n");
+	printf("Message envoyé : %s\n", buffer);
+	
 	// Fermeture du socket
 	if(close(new_socket_server) == -1)
 	{

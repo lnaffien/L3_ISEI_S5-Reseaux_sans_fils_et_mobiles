@@ -13,17 +13,14 @@ int main()
 		return errno;
 	}
 	printf("Initialisation des sockets : OK\n");
-
 	struct sockaddr_in server_addr;
-	memset(&server_addr, '\0', sizeof(server_addr));
-	server_addr.sin_family = AF_INET;
-	server_addr.sin_port = htons(PORT);
-	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	init_server_addr(&server_addr);
 
 	// Ouverture du socket
 	if(connect(socket_client, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
 	{
 		printf("Connexion au server : ERREUR\n");
+		return errno;
 	}
 	printf("Connexion au server : OK\n");
 
@@ -50,6 +47,34 @@ int main()
 			printf("Envoi du message : OK\n");
 			break;
 	}
+
+	// Reinitialisation du buffer
+	bzero(buffer, BUFFER_TAILLE);
+
+	socklen_t taille_socket = sizeof(server_addr);
+	switch(recvfrom(socket_client, buffer, BUFFER_TAILLE, 0, (struct sockaddr*) &server_addr, &taille_socket))
+	{
+		case -1 : 
+			printf("Reception de la reponse : ERREUR\n");
+			return errno;
+			break;
+		case 0 :
+			printf("Reception de la reponse : aucune reponse n'a ete recue\n");
+			return errno;
+			break;
+		default :
+			printf("Reception de la reponse : OK\n");
+			printf("Message recu : %s\n", buffer);
+			break;
+	}	
+
+	// Fermeture du socket
+	if(close(socket_client) == -1)
+	{
+		printf("Fermeture du socket : ERREUR\n");
+		return errno;
+	}
+	printf("Fermeture du socket : OK\n");
 
 	return 0;
 }
