@@ -85,11 +85,6 @@ int main()
 	bzero(buffer, BUFFER_TAILLE); //reinitialisation du buffer
 	printf("Reinitialisation du buffer : OK\n"); //TO-DO : fonction pour vérifier que le buffer soit vide
 
-
-	char temp = (char) res;
-	char * temp2 = &temp;
-	printf("%s\n", temp2);
-
 	// Fermeture du socket
 	if(close(new_socket_server) == -1)
 	{
