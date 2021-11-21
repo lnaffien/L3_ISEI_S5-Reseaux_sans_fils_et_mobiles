@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "commun.h": "c",
-        "in.h": "c",
-        "stdio.h": "c"
-    }
-}
