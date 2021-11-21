@@ -2,7 +2,24 @@
 
 int fact(int n)
 {
-	return n==0?1:n*(fact(n-1));
+	return n==0 ? 1 : n * (fact (n - 1) );
+}
+
+int string_to_int(char * string)
+{
+	int i = 0, puissance_de_dix = 1, res = 0;
+	while (string[i] != '\n')
+	{
+		if(string[i] >= '0' && string[i] <= '9')
+		{
+			res *= puissance_de_dix;
+			res += string[i] - '0';
+			puissance_de_dix *= 10;
+		}
+		i++;
+	}
+
+	return res;	
 }
 
 int main()
@@ -58,11 +75,20 @@ int main()
 		return errno;
 	}
 	printf("Reception du message : OK\n");
-	printf("Message recu : %s", buffer);
+	printf("Message recu : %s\n", buffer);
 
+	// Transformation de la chaine de caracteres recue en un nombre
+	int nbr = string_to_int(buffer);
+	int res = fact(nbr);
+	printf("Resultat : %d! = %d\n", nbr, res);
 
 	bzero(buffer, BUFFER_TAILLE); //reinitialisation du buffer
 	printf("Reinitialisation du buffer : OK\n"); //TO-DO : fonction pour vérifier que le buffer soit vide
+
+
+	char temp = (char) res;
+	char * temp2 = &temp;
+	printf("%s\n", temp2);
 
 	// Fermeture du socket
 	if(close(new_socket_server) == -1)

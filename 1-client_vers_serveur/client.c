@@ -2,28 +2,53 @@
 
 int main()
 {
-	char buffer[1024];
+	char buffer[BUFFER_TAILLE];
+
+	// Declaration et Initialisation du socket
 	int socket_client = socket(AF_INET, SOCK_STREAM, 0);
+
+	if(socket_client < 0)
+	{
+		printf("Initialisation des sockets : ERREUR\n");
+		return errno;
+	}
 	printf("Initialisation des sockets : OK\n");
 
 	struct sockaddr_in server_addr;
-
 	memset(&server_addr, '\0', sizeof(server_addr));
 	server_addr.sin_family = AF_INET;
 	server_addr.sin_port = htons(PORT);
 	server_addr.sin_addr.s_addr = inet_addr("127.0.0.1");
 
-	connect(socket_client, (struct sockaddr *) &server_addr, sizeof(server_addr));
+	// Ouverture du socket
+	if(connect(socket_client, (struct sockaddr *) &server_addr, sizeof(server_addr)) == -1)
+	{
+		printf("Connexion au server : ERREUR\n");
+	}
 	printf("Connexion au server : OK\n");
 
+	// Definition des donnees a envoyer
 	printf("Veuillez entrer le message a envoyer : ");
-	fgets(buffer,1024,stdin);
+	if(fgets(buffer, BUFFER_TAILLE, stdin) == NULL)
+	{
+		printf("Enregistrement du message e envoyer : ERREUR\n");
+		return errno;
+	}
+	printf("Enregistrement du message a envoyer : OK\n");
 
-	write(socket_client, buffer, strlen(buffer));
-	printf("Envoi du message : OK\n");
-
-	printf("Fermeture des sockets : OK\n");
-
+	// Envoie des donnees
+	switch(write(socket_client, &buffer, strlen(buffer)))
+	{
+		case -1 : 
+			printf("Envoi du message : ERREUR\n");
+			return errno;
+		case 0 :
+			printf("Envoi du message : il n'y a rien a envoyer.\n");
+			break;
+		default :
+			printf("Envoi du message : OK\n");
+			break;
+	}
 
 	return 0;
 }
