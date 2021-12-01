@@ -1,4 +1,4 @@
-#include "main.h"
+#include "includes.h"
 
 void *thread_fonction(void *arg)
 {
